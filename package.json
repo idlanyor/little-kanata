@@ -15,8 +15,7 @@
     "@umamdev/wabe": "^1.0.2",
     "link-preview-js": "^3.0.5",
     "nayan-media-downloader": "^2.4.1",
-    "openai": "^4.29.2",
-    "youtube-toolkit": "^1.0.5"
+    "openai": "^4.29.2"
   },
   "devDependencies": {
     "chai": "^5.1.0",

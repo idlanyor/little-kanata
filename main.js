@@ -66,12 +66,16 @@ bot.start().then((sock) => {
                     break;
                 case 'help':
                     await sock.sendMessage(id, {
-                        text: `Hai ${sender},Berikut adalah daftar perintah yang tersedia:
-> - \`.gemini\`: Untuk berinteraksi dengan Gemini AI.
-> - \`.gpt\`: Untuk berinteraksi dengan GPT-3.
-> - \`.help\`: Untuk menampilkan pesan bantuan ini.
+                        text: `*Kanata Bot*
+                        _by Idlanyor_\n
+                        Here My Command List
+                        *Downloader*
+                        > td - Tiktok Downloader by Url
+                        > tad - Tiktok Audio downloader by Url
+                        > igv - Instagran Video Downloader by Url
+                        > igp - Instagram Picture Downloader by Url
 
-Terima kasih!`
+Thank You!`
                     });
                     break;
             }
