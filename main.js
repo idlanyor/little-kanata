@@ -1,6 +1,6 @@
 import { clearMessages, wabe } from '@umamdev/wabe'
-import ai from './ai.js'
-import { meta, tiktok } from './downloader.js';
+// import ai from './ai.js'
+import { meta, tiktok, yutub } from './downloader.js';
 import config from "./config.js";
 import { groupParticipants, groupUpdate } from './group.js';
 import { call } from './call.js';
@@ -37,11 +37,40 @@ bot.start().then((sock) => {
             pesan.shift();
             const psn = pesan.join(' ');
             switch (cmd) {
-               
-                case 'tad':
+
+                case 'yd':
+                    try {
+                        sock.sendMessage(id, { text: 'Processing,please wait...' });
+                        let result = await yutub(psn)
+                        // console.log(result.audio)
+                        let caption = '*Youtube Video Result*'
+                        caption += '\nTitle :' + `*${result.title}*`
+                        caption += '\nSize :' + `*${result.size}*`
+                        caption += '\nChannel :' + `*${result.channel}*`
+                        await sock.sendMessage(id, { video: { url: result.video }, caption });
+
+                    } catch (error) {
+                        await sock.sendMessage(id, { text: error.message });
+
+                    }
+                    break;
+                case 'ymd':
+                    try {
+                        let result = await yutub(psn)
+                        // console.log(result.audio)
+                        sock.sendMessage(id, { text: 'Processing,please wait...' });
+                        await sock.sendMessage(id, { audio: { url: result.audio } });
+
+                    } catch (error) {
+                    
+                        await sock.sendMessage(id, { text: error.message });
+
+                    }
+                    break;
+                case 'tmd':
                     try {
                         let result = await tiktok(psn)
-                        console.log(result.audio)
+                        // console.log(result.audio)
                         sock.sendMessage(id, { text: 'Processing,please wait...' });
                         await sock.sendMessage(id, { audio: { url: result.audio } });
 
@@ -67,13 +96,15 @@ bot.start().then((sock) => {
                 case 'help':
                     await sock.sendMessage(id, {
                         text: `*Kanata Bot*
-                        _by Idlanyor_\n
-                        Here My Command List
-                        *Downloader*
-                        > td - Tiktok Downloader by Url
-                        > tad - Tiktok Audio downloader by Url
-                        > igv - Instagran Video Downloader by Url
-                        > igp - Instagram Picture Downloader by Url
+_by Idlanyor_\n\n
+Here My Command List
+*Downloader*
+> td - Tiktok Downloader by Url
+> tmd - Tiktok Audio downloader by Url
+> igv - Instagram Video Downloader by Url
+> igp - Instagram Picture Downloader by Url
+> yd - Download Youtube video by url
+> ymd - Download Youtube music by url
 
 Thank You!`
                     });
