@@ -1,4 +1,4 @@
-export async function groupUpdate(ev) {
+export async function groupUpdate(ev,sock) {
     console.log('Groups update event:', ev);
     for (const group of ev) {
         console.log(`Group updated: ${group.id}`);
@@ -54,7 +54,7 @@ export async function groupUpdate(ev) {
 
     }
 }
-export async function groupParticipants(ev) {
+export async function groupParticipants(ev,sock) {
     console.log('Group participants update event:', ev);
     const { id, participants, action } = ev;
     switch (action) {

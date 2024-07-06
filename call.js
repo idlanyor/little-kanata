@@ -1,4 +1,4 @@
-export async function call(ev) {
+export async function call(ev,sock) {
     const notifiedJids = new Set();
     // Function to sanitize JID
     const sanitizeJid = (jid) => {
