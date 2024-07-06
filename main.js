@@ -1,13 +1,12 @@
 import { clearMessages, wabe } from '@umamdev/wabe'
 // import ai from './ai.js'
-import { createSticker, StickerTypes } from 'wa-sticker-formatter';
 import { meta, tiktok, yutub } from './downloader.js';
 import config from "./config.js";
 import { groupParticipants, groupUpdate } from './group.js';
 import { call } from './call.js';
-import { downloadContentFromMessage } from '@whiskeysockets/baileys';
-import axios from 'axios';
-import { checkAnswer, jenaka, tebakSession } from './tebak/jenaka.js';
+import { bendera, checkAnswer, gambar, jenaka, tebakSession } from './tebak/index.js';
+import sticker from './features/sticker.js';
+import cerpen from './features/cerpen.js';
 // import { getLinkPreview } from 'link-preview-js';
 
 const bot = new wabe({
@@ -22,42 +21,9 @@ bot.start().then((sock) => {
         // console.log(chatUpdate.messages[0])
         try {
             let m = chatUpdate.messages[0];
+            // make sticker
+            await sticker(sock, m, chatUpdate);
 
-            // make stiker 
-            if (chatUpdate.messages[0].message?.imageMessage?.caption == 's' && chatUpdate.messages[0].message?.imageMessage) {
-                // console.log(true)
-                const getMedia = async (msg) => {
-                    console.log(msg)
-                    const messageType = Object.keys(msg?.message)[0]
-                    const stream = await downloadContentFromMessage(msg.message[messageType], messageType.replace('Message', ''))
-                    let buffer = Buffer.from([])
-                    for await (const chunk of stream) {
-                        buffer = Buffer.concat([buffer, chunk])
-                    }
-
-                    return buffer
-                }
-
-                const mediaData = await getMedia(m)
-                if (!mediaData) {
-                    console.log('Media data not found');
-                    return;
-                }
-
-                const stickerOption = {
-                    pack: "Kanata",
-                    author: "KanataBot",
-                    type: StickerTypes.FULL,
-                    quality: 100
-                }
-
-                try {
-                    const generateSticker = await createSticker(mediaData, stickerOption);
-                    await sock.sendMessage(m.key.remoteJid, { sticker: generateSticker }) //langsung cobaaa
-                } catch (error) {
-                    console.log('Error creating sticker:', error);
-                }
-            }
             if (!m.message || m.key.fromMe) return;
             const chat = await clearMessages(m);
 
@@ -83,28 +49,25 @@ bot.start().then((sock) => {
                 await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId);
             } else {
                 switch (cmd) {
-                    // case 'coba':
-                    //     if (m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo) {
-                    //         const quotedMessage = m.message.extendedTextMessage.contextInfo.quotedMessage;
-                    //         if (quotedMessage) {
-                    //             console.log('Quoted message:', quotedMessage);
-
-                    //             // Ambil teks dari pesan yang dikutip (jika tersedia)
-                    //             const quotedText = quotedMessage.conversation || quotedMessage.extendedTextMessage?.text;
-                    //             console.log('Quoted text:', quotedText);
-
-
-                    //         }
-                    //     }
-                    //     break;
                     case 'jenaka':
                         await jenaka(id, sock);
+                        break;
+                    case 'gambar':
+                        await gambar(id, sock);
+                        break;
+                    case 'bendera':
+                        await bendera(id, sock);
+                        break;
+                    case 'bendera':
+                        await bendera(id, sock);
+                        break;
+                    case 'cerpen':
+                        await sock.sendMessage(id, { text: await cerpen() });
                         break;
                     case 'yd':
                         try {
                             sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await yutub(psn)
-                            // console.log(result.audio)
                             let caption = '*Youtube Video Result*'
                             caption += '\nTitle :' + `*${result.title}*`
                             caption += '\nSize :' + `*${result.size}*`
@@ -120,7 +83,7 @@ bot.start().then((sock) => {
                             let result = await yutub(psn);
                             // console.log(result.audio)
                             sock.sendMessage(id, { text: 'Processing, please wait...' });
-                            await sock.sendMessage(id, { audio: { url: result.audio } });
+                            await sock.sendMessage(id, { audio: { url: result.video } });
 
                         } catch (error) {
                             await sock.sendMessage(id, { text: error.message });
