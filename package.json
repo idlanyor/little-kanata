@@ -15,7 +15,7 @@
     "@whiskeysockets/baileys": "^6.7.5",
     "axios": "^1.7.2",
     "chalk": "^5.3.0",
-    "nayan-media-downloader": "^2.4.1",
+    "nayan-media-downloader": "^2.4.2",
     "wa-sticker-formatter": "^4.4.4"
   },
   "devDependencies": {

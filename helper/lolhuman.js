@@ -1,9 +1,10 @@
 import axios from 'axios';
+import config from '../config.js';
 
 const axiosInstance = axios.create({
     baseURL: 'https://api.lolhuman.xyz/api/',
     params: {
-        apikey: 'yatanokagami'
+        apikey: config.apikey
     }
 });
 
