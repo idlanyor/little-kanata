@@ -8,7 +8,8 @@ import { bendera, checkAnswer, gambar, jenaka, tebakSession } from './tebak/inde
 import sticker from './features/sticker.js';
 import { quotes, cerpen } from './features/random.js';
 import { ytPlay } from './features/youtube.js';
-import axios from 'axios';
+// import axios from 'axios';
+import { removebg } from './features/image.js';
 // import { getLinkPreview } from 'link-preview-js';
 
 const bot = new wabe({
@@ -25,6 +26,7 @@ bot.start().then((sock) => {
             let m = chatUpdate.messages[0];
             // make sticker
             await sticker(sock, m, chatUpdate);
+            await removebg(sock, m, chatUpdate)
 
             if (!m.message) return;
             const chat = await clearMessages(m);
@@ -44,7 +46,7 @@ bot.start().then((sock) => {
                 quotedMessageId = m;
             }
             let pesan = parsedMsg.split(' ');
-            const cmd = pesan[0];
+            const cmd = pesan[0].toLowerCase();
             pesan.shift();
             const psn = pesan.join(' ');
             if (tebakSession.has(id)) {

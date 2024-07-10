@@ -24,3 +24,11 @@ export const lol = async (url, config = {}) => {
         throw error; // Rethrow the error for handling in calling functions
     }
 };
+export const lolPost = async (url, config = {}) => {
+    try {
+        return await axiosInstance.post(url, config);
+    } catch (error) {
+        console.error('Error in tebak request:', error);
+        throw error; // Rethrow the error for handling in calling functions
+    }
+};
