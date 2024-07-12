@@ -4,9 +4,11 @@ import { meta, tiktok, yutub } from './downloader.js';
 import config from "./config.js";
 import { groupParticipants, groupUpdate } from './group.js';
 import { call } from './call.js';
-import { bendera, checkAnswer, gambar, jenaka, tebakSession } from './tebak/index.js';
+import { bendera, caklontong, checkAnswer, gambar, jenaka, tebakSession } from './tebak/index.js';
 import sticker from './features/sticker.js';
-import cerpen from './features/cerpen.js';
+import { quotes, cerpen } from './features/random.js';
+import { ytPlay } from './features/youtube.js';
+import axios from 'axios';
 // import { getLinkPreview } from 'link-preview-js';
 
 const bot = new wabe({
@@ -24,7 +26,7 @@ bot.start().then((sock) => {
             // make sticker
             await sticker(sock, m, chatUpdate);
 
-            if (!m.message || m.key.fromMe) return;
+            if (!m.message) return;
             const chat = await clearMessages(m);
 
             let parsedMsg, sender, id, quotedMessageId;
@@ -46,6 +48,7 @@ bot.start().then((sock) => {
             pesan.shift();
             const psn = pesan.join(' ');
             if (tebakSession.has(id)) {
+                if (m.key.fromMe) return
                 await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId);
             } else {
                 switch (cmd) {
@@ -58,31 +61,49 @@ bot.start().then((sock) => {
                     case 'bendera':
                         await bendera(id, sock);
                         break;
-                    case 'bendera':
-                        await bendera(id, sock);
+                    case 'lontong':
+                        await caklontong(id, sock);
                         break;
                     case 'cerpen':
                         await sock.sendMessage(id, { text: await cerpen() });
                         break;
+                    case 'yp':
+                        try {
+                            if (psn === '') {
+                                sock.sendMessage(id, { text: "Masukan judul lagu yang akan diputar" })
+                                return
+                            }
+                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
+                            let result = await ytPlay(psn)
+                            let caption = '*Youtube Video Result*'
+                            caption += '\nTitle :' + `*${result.title}*`
+                            caption += '\nChannel :' + `*${result.channel}*`
+                            caption += '\n _⏳Bentar yaa, audio lagi dikirim⏳_'
+                            await sock.sendMessage(id, { image: { url: result.thumbnail }, caption })
+                            // await sock.sendMessage(id, { text: result.audio })
+                            await sock.sendMessage(id, { audio: { url: result.video } });
+                        } catch (error) {
+                            await sock.sendMessage(id, { text: 'ups,' + error.message });
+                        }
+                        break; // Tambahkan break di sini
                     case 'yd':
                         try {
-                            sock.sendMessage(id, { text: 'Processing, please wait...' });
+                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await yutub(psn)
                             let caption = '*Youtube Video Result*'
                             caption += '\nTitle :' + `*${result.title}*`
                             caption += '\nSize :' + `*${result.size}*`
                             caption += '\nChannel :' + `*${result.channel}*`
                             await sock.sendMessage(id, { video: { url: result.video }, caption });
-
                         } catch (error) {
                             await sock.sendMessage(id, { text: error.message });
                         }
                         break; // Tambahkan break di sini
                     case 'ymd':
                         try {
+                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await yutub(psn);
                             // console.log(result.audio)
-                            sock.sendMessage(id, { text: 'Processing, please wait...' });
                             await sock.sendMessage(id, { audio: { url: result.video } });
 
                         } catch (error) {
@@ -91,9 +112,9 @@ bot.start().then((sock) => {
                         break; // Tambahkan break di sini
                     case 'td':
                         try {
+                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await tiktok(psn);
                             // console.log(result.audio)
-                            sock.sendMessage(id, { text: 'Processing, please wait...' });
                             await sock.sendMessage(id, { video: { url: result.video }, caption: result.title });
 
                         } catch (error) {
@@ -102,9 +123,9 @@ bot.start().then((sock) => {
                         break; // Tambahkan break di sini
                     case 'tmd':
                         try {
+                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await tiktok(psn);
                             // console.log(result.audio)
-                            sock.sendMessage(id, { text: 'Processing, please wait...' });
                             await sock.sendMessage(id, { audio: { url: result.audio } });
 
                         } catch (error) {
@@ -115,9 +136,9 @@ bot.start().then((sock) => {
                     case 'fd':
                     case 'meta':
                         try {
+                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await meta(psn);
                             // console.log(result.audio)
-                            sock.sendMessage(id, { text: 'Processing, please wait...' });
                             await sock.sendMessage(id, { video: { url: result } });
 
                         } catch (error) {
@@ -129,15 +150,24 @@ bot.start().then((sock) => {
                             text: `*Kanata Bot*
 _by Idlanyor_\n\n
 Here My Command List
-*Downloader*
+*DOWNLOADER*
 > td - Tiktok Downloader by Url
 > tmd - Tiktok Audio downloader by Url
 > igv - Instagram Video Downloader by Url
 > igp - Instagram Picture Downloader by Url
 > yd - Download Youtube video by url
-> ymd - Download Youtube music by url
+> ymd - Download Youtube music by url\n
+*GENERAL*
+> s - Stiker(send image with caption 's')
+*RANDOM*
+> cerpen - Random cerpen from creative author
+*MINIGAME*
+> gambar - tebak gambar
+> bendera - tebak bendera
+> jenaka - tebak kata jenaka
 
-Thank You!`
+
+${await quotes()}`
                         });
                         break; // Tambahkan break di sini
                 }

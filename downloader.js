@@ -20,7 +20,9 @@ export async function meta(url) {
 export async function yutub(url) {
     try {
         let result = await ytdown(url)
+        console.log(result)
         return {
+            thumbnail: result.data.thumbnail,
             title: result.data.title,
             audio: result.data.audio,
             video: result.data.video,
