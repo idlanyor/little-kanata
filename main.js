@@ -57,6 +57,9 @@ bot.start().then((sock) => {
                     case 'jenaka':
                         await jenaka(id, sock);
                         break;
+                    case 'gm':
+                        await jenaka(id, sock);
+                        break;
                     case 'gambar':
                         await gambar(id, sock);
                         break;
@@ -67,29 +70,29 @@ bot.start().then((sock) => {
                         await sock.sendMessage(id, { text: await cerpen() });
                         break;
                     case 'yp':
-                        try {
-                            if (psn === '') {
-                                sock.sendMessage(id, { text: "Masukan judul lagu yang akan diputar" })
-                                return
-                            }
-                            await sock.sendMessage(id, { text: 'Processing, please wait...' });
-                            let result = await ytPlay(psn)
-                            let caption = '*Youtube Video Result*'
-                            caption += '\nTitle :' + `*${result.title}*`
-                            caption += '\nChannel :' + `*${result.channel}*`
-                            caption += '\n _⏳Bentar yaa, audio lagi dikirim⏳_'
-                            await sock.sendMessage(id, { image: { url: result.thumbnail }, caption })
-                            // await sock.sendMessage(id, { text: result.audio })
-                            await sock.sendMessage(id, { audio: { url: result.video } });
-                        } catch (error) {
-                            await sock.sendMessage(id, { text: 'ups,' + error.message });
+                        // try {
+                        if (psn === '') {
+                            sock.sendMessage(id, { text: "Masukan judul lagu yang akan diputar" })
+                            return
                         }
+                        await sock.sendMessage(id, { text: 'Processing, please wait...' });
+                        let result = await ytPlay(psn)
+                        let caption = '*Youtube Video Result*'
+                        caption += '\nTitle :' + `*${result.title}*`
+                        caption += '\nChannel :' + `*${result.channel}*`
+                        caption += '\n _⏳Bentar yaa, audio lagi dikirim⏳_'
+                        await sock.sendMessage(id, { image: { url: result.thumbnail }, caption })
+                        // await sock.sendMessage(id, { text: result.audio })
+                        await sock.sendMessage(id, { audio: { url: result.video } });
+                        // } catch (error) {
+                        //     await sock.sendMessage(id, { text: 'ups,' + error.message });
+                        // }
                         break; // Tambahkan break di sini
                     case 'yd':
                         try {
                             await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await yutub(psn)
-                            let caption = '*Youtube Video Result*'
+                            caption = '*Youtube Video Result*'
                             caption += '\nTitle :' + `*${result.title}*`
                             caption += '\nSize :' + `*${result.size}*`
                             caption += '\nChannel :' + `*${result.channel}*`
@@ -145,10 +148,13 @@ bot.start().then((sock) => {
                         }
                         break; // Tambahkan break di sini
                     case 'help':
-                        let caption = `
+                        caption = `
 *Kanata Bot*
 _by Idlanyor_\n\n
 Here My Command List
+
+*ARTIFICIAL INTELLIGENCE*
+> gm - Chat With Gemini AI
 *DOWNLOADER*
 > td - Tiktok Downloader by Url
 > tmd - Tiktok Audio downloader by Url
