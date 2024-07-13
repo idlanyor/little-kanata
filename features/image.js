@@ -1,8 +1,8 @@
 // import { StickerTypes, createSticker } from "wa-sticker-formatter"
 import { downloadContentFromMessage } from "@whiskeysockets/baileys"
-import { lolPost } from "../helper/lolhuman.js"
+// import { lolPost } from "../helper/lolhuman.js"
 import sharp from "sharp"
-import fs from 'node:fs';
+// import fs from 'node:fs';
 import axios from 'axios';
 import FormData from 'form-data';
 import config from "../config.js";
@@ -26,11 +26,6 @@ async function removeBg(blob) {
         throw new Error(`${error.response.status}: ${error.response.statusText}`);
     }
 }
-
-// const inputPath = '/path/to/file.jpg';
-// const fileBlob = await fs.promises.readFile(inputPath);
-// const rbgResultData = await removeBg(fileBlob);
-// fs.writeFileSync('no-bg.png', Buffer.from(rbgResultData));
 
 export async function removebg(sock, m, chatUpdate) {
     if (chatUpdate.messages[0].message?.imageMessage?.caption == 'rem' && chatUpdate.messages[0].message?.imageMessage) {
