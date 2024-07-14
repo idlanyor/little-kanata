@@ -4,4 +4,3 @@ package-lock.json
 store-*.json
 config.js
 multifile.js
-ai.js
