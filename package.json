@@ -1,9 +1,10 @@
 {
   "name": "bot-wa",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
   "main": "main.js",
   "type": "module",
+  "private": "true",
   "scripts": {
     "start": "node ."
   },
@@ -11,6 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.10",
     "@google/generative-ai": "^0.14.1",
     "@ilovepdf/ilovepdf-nodejs": "^0.2.6",
     "@mistralai/mistralai": "^0.5.0",
