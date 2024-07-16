@@ -11,6 +11,7 @@ import { removebg } from './features/image.js';
 import { gemini, gemmaGroq, llamaGroq, mistral, mixtralGroq } from './ai.js';
 import { helpMessage } from './helper/help.js';
 import { gambarPdf } from './features/pdf.js';
+import { tomp3 } from './features/converter.js';
 // import { getLinkPreview } from 'link-preview-js';
 
 const bot = new wabe({
@@ -29,6 +30,7 @@ bot.start().then((sock) => {
             await sticker(sock, m, chatUpdate);
             await removebg(sock, m, chatUpdate)
             await gambarPdf(sock, m, chatUpdate)
+            await tomp3(sock, m, chatUpdate)
 
             if (!m.message) return;
             const chat = await clearMessages(m);
