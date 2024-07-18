@@ -1,3 +1,4 @@
+import moment from 'moment';
 import os from 'os';
 
 export async function systemSpec() {
@@ -10,9 +11,20 @@ export async function systemSpec() {
     const totalMem = os.totalmem() / (1024 ** 3); // Dalam GB
     const freeMem = os.freemem() / (1024 ** 3); // Dalam GB
     const usedMem = totalMem - freeMem;
+    const uptime = os.uptime() / 3600; // Dalam jam
+
+    const hours = Math.floor(uptime);
+    const minutes = Math.floor((uptime - hours) * 60);
+    const seconds = Math.floor(((uptime - hours) * 60 - minutes) * 60);
+    // Informasi Bandwidth
+
     OS += `Total RAM: ${totalMem.toFixed(2)} GB \n`;
     OS += `RAM Terpakai: ${usedMem.toFixed(2)} GB \n`;
     OS += `RAM Tersedia: ${freeMem.toFixed(2)} GB \n`;
+    OS += `Uptime: ${hours} jam ${minutes} menit ${seconds} detik \n`;
+    OS += `Platform: ${platform} \n`;
+    OS += `Release: ${release} \n`;
+    OS += `Type: ${osType} \n`;
 
     // Informasi CPU
     const cpus = os.cpus();
@@ -20,5 +32,11 @@ export async function systemSpec() {
         // console.log(`CPU ${index + 1}: ${cpu.model}, Kecepatan: ${cpu.speed} MHz /n`);
         OS += `CPU ${index + 1}: ${cpu.model} \n`;
     });
+
     return OS
 }
+
+
+export const calculatePing = function (timestamp, now) {
+    return moment.duration(now - moment(timestamp * 1000)).asSeconds();
+};

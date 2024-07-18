@@ -12,6 +12,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
  * @param {string} outputFormat - The format of the output audio (e.g., 'mp3').
  * @returns {Promise<Buffer>}
  */
+
 const convertVideoToAudioBuffer = (inputBuffer, outputFormat = 'mp3') => {
   return new Promise((resolve, reject) => {
     const inputStream = new PassThrough();
@@ -38,40 +39,39 @@ const convertVideoToAudioBuffer = (inputBuffer, outputFormat = 'mp3') => {
 };
 const getMedia = async (msg) => {
   try {
-      const messageType = Object.keys(msg?.message)[0];
-      const stream = await downloadContentFromMessage(msg.message[messageType], messageType.replace('Message', ''));
-      let buffer = Buffer.from([]);
-      for await (const chunk of stream) {
-          buffer = Buffer.concat([buffer, chunk]);
-      }
-      return buffer;
+    const messageType = Object.keys(msg?.message)[0];
+    const stream = await downloadContentFromMessage(msg.message[messageType], messageType.replace('Message', ''));
+    let buffer = Buffer.from([]);
+    for await (const chunk of stream) {
+      buffer = Buffer.concat([buffer, chunk]);
+    }
+    return buffer;
   } catch (error) {
-      throw new Error('Failed to download media: ' + error.message);
+    throw new Error('Failed to download media: ' + error.message);
   }
 };
 export async function tomp3(sock, m, chatUpdate) {
   try {
-    console.log(chatUpdate.messages[0].message)
-      const videoMessage = chatUpdate.messages[0].message?.videoMessage;
-      if (videoMessage?.caption === 'tomp3') {
-          const mediaData = await getMedia(m);
-          if (!mediaData) {
-              console.error('Media data not found');
-              await sock.sendMessage(m.key.remoteJid, { text: 'Media data not found' });
-              return;
-          }
-
-          try {
-             
-              let audio = await convertVideoToAudioBuffer(mediaData, 'mp3');
-              await sock.sendMessage(m.key.remoteJid, { audio: audio });
-          } catch (error) {
-              await sock.sendMessage(m.key.remoteJid, { text: 'Error converting to MP3: ' + error.message });
-              console.error('Error converting to PDF:', error);
-          }
+    const videoMessage = chatUpdate.messages[0].message?.videoMessage;
+    if (videoMessage?.caption === 'tomp3') {
+      const mediaData = await getMedia(m);
+      if (!mediaData) {
+        console.error('Media data not found');
+        await sock.sendMessage(m.key.remoteJid, { text: 'Media data not found' });
+        return;
       }
+
+      try {
+
+        let audio = await convertVideoToAudioBuffer(mediaData, 'mp3');
+        await sock.sendMessage(m.key.remoteJid, { audio: audio });
+      } catch (error) {
+        await sock.sendMessage(m.key.remoteJid, { text: 'Error converting to MP3: ' + error.message });
+        console.error('Error converting to PDF:', error);
+      }
+    }
   } catch (error) {
-      console.error('Error in convertBuffer function:', error);
-      await sock.sendMessage(m.key.remoteJid, { text: 'An error occurred: ' + error.message });
+    console.error('Error in convertBuffer function:', error);
+    await sock.sendMessage(m.key.remoteJid, { text: 'An error occurred: ' + error.message });
   }
 }

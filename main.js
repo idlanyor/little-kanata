@@ -12,6 +12,7 @@ import { gemini, gemmaGroq, llamaGroq, mistral, mixtralGroq } from './ai.js';
 import { helpMessage } from './helper/help.js';
 import { gambarPdf } from './features/pdf.js';
 import { tomp3 } from './features/converter.js';
+import { calculatePing, systemSpec } from './features/owner/server.js';
 // import { getLinkPreview } from 'link-preview-js';
 
 const bot = new wabe({
@@ -39,13 +40,13 @@ bot.start().then((sock) => {
             if (!chat) return;
             if (chat.chatsFrom === "private") {
                 parsedMsg = chat.message
-                sender = chat.pushName
+                sender = chat.pushName || chat.remoteJid
                 id = chat.remoteJid
                 quotedMessageId = m;
             } else if (chat.chatsFrom === "group") {
                 console.log(chat)
                 parsedMsg = chat.participant.message
-                sender = chat.participant.pushName
+                sender = chat.participant.pushName || chat.participant.number
                 id = chat.remoteJid
                 quotedMessageId = m;
             }
@@ -59,49 +60,12 @@ bot.start().then((sock) => {
                 await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId);
             } else {
                 switch (cmd) {
+                    // Game
                     case 'jenaka':
                         await jenaka(id, sock);
                         break;
                     case 'lontong':
                         await caklontong(id, sock);
-                        break;
-                    case 'gm':
-                        if (psn === '') {
-                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Gemini" })
-                            return
-                        }
-                        await sock.sendMessage(id, { text: await gemini(psn) });
-                        break;
-                    case 'mistral':
-                        if (psn === '') {
-                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Mistral" })
-                            return
-                        }
-                        await sock.sendMessage(id, { text: await mistral(psn) });
-                        break;
-                    case 'mixtral':
-                        if (psn === '') {
-                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Mixtral" })
-                            return
-                        }
-                        await sock.sendMessage(id, { text: await mixtralGroq(psn) });
-                        break;
-                    case 'llama':
-                        if (psn === '') {
-                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Llama" })
-                            return
-                        }
-                        await sock.sendMessage(id, { text: await llamaGroq(psn) });
-                        break;
-                    case 'gemma':
-                        if (psn === '') {
-                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Gemma" })
-                            return
-                        }
-                        await sock.sendMessage(id, { text: await gemmaGroq(psn) });
-                        break;
-                    case 's':
-                        await jenaka(psn);
                         break;
                     case 'gambar':
                         await gambar(id, sock);
@@ -109,9 +73,13 @@ bot.start().then((sock) => {
                     case 'bendera':
                         await bendera(id, sock);
                         break;
-                    case 'cerpen':
-                        await sock.sendMessage(id, { text: await cerpen() });
+                    case 'ping':
+                        await sock.sendMessage(id, { text: `Bot merespon dalam *_${calculatePing(m.messageTimestamp, Date.now())} detik_*` })
                         break;
+                    case 'stats':
+                        await sock.sendMessage(id, { text: `${await systemSpec()}` })
+                        break;
+                    // Downloader
                     case 'yp':
                         try {
                             if (psn === '') {
@@ -125,6 +93,7 @@ bot.start().then((sock) => {
                             caption += '\nTitle :' + `*${result.title}*`
                             caption += '\nChannel :' + `*${result.channel}*`
                             caption += '\n _⏳Bentar yaa, audio lagi dikirim⏳_'
+
                             await sock.sendMessage(id, { text: caption })
                             // await sock.sendMessage(id, { text: result.audio })
                             await sock.sendMessage(id, { audio: { url: result.video } });
@@ -189,9 +158,57 @@ bot.start().then((sock) => {
                         } catch (error) {
                             await sock.sendMessage(id, { text: error.message });
                         }
-                        break; // Tambahkan break di sini
+                        break;
+                    // Artificial Intelligence
+                    case 'gm':
+                        if (psn === '') {
+                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Gemini" })
+                            return
+                        }
+                        await sock.sendMessage(id, { text: await gemini(psn) });
+                        break;
+                    case 'mistral':
+                        if (psn === '') {
+                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Mistral" })
+                            return
+                        }
+                        await sock.sendMessage(id, { text: await mistral(psn) });
+                        break;
+                    case 'mixtral':
+                        if (psn === '') {
+                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Mixtral" })
+                            return
+                        }
+                        await sock.sendMessage(id, { text: await mixtralGroq(psn) });
+                        break;
+                    case 'llama':
+                        if (psn === '') {
+                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Llama" })
+                            return
+                        }
+                        await sock.sendMessage(id, { text: await llamaGroq(psn) });
+                        break;
+                    case 'gemma':
+                        if (psn === '') {
+                            sock.sendMessage(id, { text: "Tanyakan sesuatu kepada Gemma" })
+                            return
+                        }
+                        await sock.sendMessage(id, { text: await gemmaGroq(psn) });
+                        break;
+                    case 'cerpen':
+                        await sock.sendMessage(id, { text: await cerpen() });
+                        break;
                     case 'help':
-                        helpMessage(id,sock);
+                    case 'menu':
+                    case 'h':
+                        try {
+                            await sock.sendMessage(id, { image: { url: `https://api.lolhuman.xyz/api/ephoto1/hologram3d?text=${sender}&apikey=${config.apikey}` }, caption: await helpMessage(sender) });
+                        } catch (error) {
+                            // console.log(error)
+                            await sock.sendMessage(id, {
+                                text: await helpMessage(sender)
+                            });
+                        }
                         break;
                 }
             }

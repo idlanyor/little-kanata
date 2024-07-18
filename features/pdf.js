@@ -1,7 +1,7 @@
 import ILovePDFApi from "@ilovepdf/ilovepdf-nodejs";
 import config from "../config.js";
-import { downloadContentFromMessage } from "@whiskeysockets/baileys";
-import sharp from "sharp";
+// import sharp from "sharp";
+import { getMedia } from "../helper/mediaMsg.js";
 
 const pdfClient = new ILovePDFApi(config.pdf.public, config.pdf.secret)
 
@@ -57,19 +57,7 @@ export const pdfToImage = async (fileBuffer) => {
 }
 
 
-const getMedia = async (msg) => {
-    try {
-        const messageType = Object.keys(msg?.message)[0];
-        const stream = await downloadContentFromMessage(msg.message[messageType], messageType.replace('Message', ''));
-        let buffer = Buffer.from([]);
-        for await (const chunk of stream) {
-            buffer = Buffer.concat([buffer, chunk]);
-        }
-        return buffer;
-    } catch (error) {
-        throw new Error('Failed to download media: ' + error.message);
-    }
-};
+
 
 export async function gambarPdf(sock, m, chatUpdate) {
     try {
@@ -83,13 +71,13 @@ export async function gambarPdf(sock, m, chatUpdate) {
             }
 
             try {
-                const resizedImage = await sharp(mediaData)
-                    .resize(800, 800, { // Change the dimensions as needed
-                        fit: sharp.fit.inside,
-                        withoutEnlargement: true
-                    })
-                    .toBuffer();
-                let document = await imageToPdf(resizedImage);
+                // const resizedImage = await sharp(mediaData)
+                //     .resize(800, 800, { // Change the dimensions as needed
+                //         fit: sharp.fit.inside,
+                //         withoutEnlargement: true
+                //     })
+                //     .toBuffer();
+                let document = await imageToPdf(mediaData);
                 await sock.sendMessage(m.key.remoteJid, { document: document });
             } catch (error) {
                 await sock.sendMessage(m.key.remoteJid, { text: 'Error converting to PDF: ' + error.message });

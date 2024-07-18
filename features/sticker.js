@@ -1,20 +1,9 @@
 import { StickerTypes, createSticker } from "wa-sticker-formatter"
-import { downloadContentFromMessage } from "@whiskeysockets/baileys"
+import { getMedia } from "../helper/mediaMsg.js";
 
-export default async function sticker(sock,m,chatUpdate) {
+export default async function sticker(sock, m, chatUpdate) {
     if (chatUpdate.messages[0].message?.imageMessage?.caption == 's' && chatUpdate.messages[0].message?.imageMessage) {
-        // console.log(true)
-        const getMedia = async (msg) => {
-            console.log(msg)
-            const messageType = Object.keys(msg?.message)[0]
-            const stream = await downloadContentFromMessage(msg.message[messageType], messageType.replace('Message', ''))
-            let buffer = Buffer.from([])
-            for await (const chunk of stream) {
-                buffer = Buffer.concat([buffer, chunk])
-            }
 
-            return buffer
-        }
 
         const mediaData = await getMedia(m)
         if (!mediaData) {
