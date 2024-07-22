@@ -1,40 +1,53 @@
-// import fs from 'node:fs';
-// import ILovePDFApi from '@ilovepdf/ilovepdf-nodejs';
-// import ILovePDFFile from '@ilovepdf/ilovepdf-nodejs/ILovePDFFile.js';
-// import config from '../config.js';
-// import { telegraph } from './uploader.js';
+import ILovePDFApi from "@ilovepdf/ilovepdf-nodejs";
+import config from "../config.js";
+import fs from 'fs';
+import path from 'path';
 
-// class ApiLove {
-//     constructor(opt = undefined) {
-//         this.apilove = new ILovePDFApi(config.pdf.public, config.pdf.secret, {
-//             url: 'https://api.ilovepdf.com'  // Menentukan base URL secara eksplisit
-//         });
+const apilove = new ILovePDFApi(config.pdf.public, config.pdf.secret);
 
+// const imageToPdf = async (imageBuffer) => {
+//     const imgpdf = apilove.newTask('imagepdf');
+//     if (!imgpdf) {
+//         throw new Error('Failed to create a new task');
 //     }
-
-//     async imgToPdf(imgBuffer) {
-//         try {
-//             // const imgUrl = await telegraph(imgBuffer);
-//             const file = new ILovePDFFile(imgBuffer)
-//             const task = this.apilove.newTask('imagepdf');
-//             await task.addFile(file);
-//             await task.process();
-//             return task.download();
-//         } catch (error) {
-//             console.error('Gagal mengkonversi gambar ke PDF:', error);
-//             throw error;
-//         }
-//     }
-// }
-
-// (async () => {
 //     try {
-//         const apilove = new ApiLove();
-//         const pdfBuffer = await apilove.imgToPdf('./image.png');
-//         console.log('PDF Buffer:', pdfBuffer);
-//         // Simpan PDF ke file
-//         fs.writeFileSync('./output.pdf', pdfBuffer);
+//         await imgpdf.start();
+//         await imgpdf.addFile(imageBuffer);
+//         await imgpdf.process();
+//         const downloadBuffer = await imgpdf.download(); // assuming download returns a buffer
+//         const filePath = path.join(__dirname, 'output.pdf');
+//         fs.writeFileSync(filePath, downloadBuffer);
+//         return filePath;
 //     } catch (error) {
-//         console.error('Error:', error);
+//         console.error('Error during PDF conversion:', error);
+//         throw error;
 //     }
-// })();
+// };
+const imageToPdf = async (imageBuffer) => {
+    const imgpdf = apilove.newTask('imagepdf');
+    if (!imgpdf) {
+        throw new Error('Failed to create a new task');
+    }
+    try {
+        await imgpdf.start();
+        await imgpdf.addFile(imageBuffer);
+        await imgpdf.process();
+        const downloadBuffer = await imgpdf.download(); // assuming download returns a buffer
+        const filePath = path.join(import.meta.dirname, 'output.pdf');
+        fs.writeFileSync(filePath, downloadBuffer);
+        return filePath;
+    } catch (error) {
+        console.error('Error during PDF conversion:', error);
+        throw error;
+    }
+};
+
+(async () => {
+    try {
+        const imageBuffer = fs.readFileSync(path.join(import.meta.dirname, 'image.jpeg')); // Read the image file into a buffer
+        const pdfFilePath = await imageToPdf(imageBuffer);
+        console.log('PDF saved to:', pdfFilePath);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+})();
