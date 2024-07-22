@@ -1,3 +1,4 @@
+
 import { clearMessages, wabe } from '@umamdev/wabe'
 import { meta, tiktok, yutub } from './downloader.js';
 import config from "./config.js";
@@ -6,7 +7,7 @@ import { call } from './call.js';
 import { bendera, caklontong, checkAnswer, gambar, jenaka, tebakSession } from './tebak/index.js';
 import sticker from './features/sticker.js';
 import { quotes, cerpen } from './features/random.js';
-import { ytPlay } from './features/youtube.js';
+import { ytPlay, ytSearchResult } from './features/youtube.js';
 import { removebg } from './features/image.js';
 import { gemini, gemmaGroq, llamaGroq, mistral, mixtralGroq } from './ai.js';
 import { helpMessage } from './helper/help.js';
@@ -78,6 +79,9 @@ bot.start().then((sock) => {
                         break;
                     case 'stats':
                         await sock.sendMessage(id, { text: `${await systemSpec()}` })
+                        break;
+                    case 'yts':
+                        await sock.sendMessage(id, { text: `${await ytSearchResult(psn)}` })
                         break;
                     // Downloader
                     case 'yp':
@@ -202,13 +206,19 @@ bot.start().then((sock) => {
                     case 'menu':
                     case 'h':
                         try {
-                            await sock.sendMessage(id, { image: { url: `https://api.lolhuman.xyz/api/ephoto1/hologram3d?text=${sender}&apikey=${config.apikey}` }, caption: await helpMessage(sender) });
+                            // console.log("foto profil url:", await sock.profilePictureUrl(id, 'image'))
+                            // console.log("id : ", m.key.remoteJid)
+                            await sock.sendMessage(id, { image: { url: await sock.profilePictureUrl(m.key.remoeJid, 'image') }, caption: await helpMessage(sender) });
+                            // await sock.sendMessage(id, { image: { url: `https://api.lolhuman.xyz/api/ephoto1/hologram3d?text=${sender}&apikey=${config.apikey}` }, caption: await helpMessage(sender) });
                         } catch (error) {
-                            // console.log(error)
+                            console.log("id dari catch : ", m.key.participant)
+                            console.log(error)
                             await sock.sendMessage(id, {
                                 text: await helpMessage(sender)
                             });
                         }
+
+
                         break;
                 }
             }

@@ -10,6 +10,18 @@ export const ytsearch = async (query) => {
         }));
     return response;
 }
+export const ytSearchResult = async (query) => {
+    const hasilPencarian = await ytsearch(query);
+    let text = '*Hasil Pencarian Youtube* :\n\n';
+    hasilPencarian.forEach((hasil, index) => {
+        text += `🗿 Hasil ke-${index + 1}\n`;
+        text += `> 📚 *${hasil.title}*\n`;
+        text += `> 🔗 ${hasil.url}\n\n`;
+    });
+    return text;
+}
+// console.log(await ytSearchResult('jejak awan pesawat'))
+
 
 export const ytvid = async (url) => {
     const response = (await lol('ytvideo', { params: { url } })).data.result;
@@ -30,7 +42,6 @@ export const ytPlay = async (query) => {
     }
 }
 
-// console.log(await ytPlay('jejak awan pesawat'))
 
 // const testPerformance = async () => {
 //     const query = 'jejak awan pesawat official';
