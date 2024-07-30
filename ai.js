@@ -3,6 +3,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Groq from "groq-sdk";
 import config from "./config.js";
 
+class GroqAi{
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+    }
+
+}
+
 // text generation
 // gemini
 const aigem = new GoogleGenerativeAI(config.gemini)

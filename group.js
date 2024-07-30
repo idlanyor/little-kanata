@@ -1,4 +1,4 @@
-export async function groupUpdate(ev,sock) {
+export async function groupUpdate(ev, sock) {
     console.log('Groups update event:', ev);
     for (const group of ev) {
         console.log(`Group updated: ${group.id}`);
@@ -54,21 +54,21 @@ export async function groupUpdate(ev,sock) {
 
     }
 }
-export async function groupParticipants(ev,sock) {
+export async function groupParticipants(ev, sock) {
     console.log('Group participants update event:', ev);
     const { id, participants, action } = ev;
     switch (action) {
         case 'add':
             // Handle new participants
             for (const participant of participants) {
-                await sock.sendMessage(id, { text: `Welcome @${participant.split('@')[0]}!`, mentions: [participant] });
+                await sock.sendMessage(id, { text: `Selamat Datang @${participant.split('@')[0]}!,semoga betah`, mentions: [participant] });
                 console.log(`Sent welcome message to: ${participant}`);
             }
             break;
         case 'remove':
             // Handle removed participants
             for (const participant of participants) {
-                await sock.sendMessage(id, { text: `Goodbye @${participant.split('@')[0]}!`, mentions: [participant] });
+                await sock.sendMessage(id, { text: ` @${participant.split('@')[0]} Meninggalkan pertempuran`, mentions: [participant] });
                 console.log(`Sent goodbye message to: ${participant}`);
             }
             break;
@@ -88,3 +88,16 @@ export async function groupParticipants(ev,sock) {
             break;
     }
 }
+
+async function promote(jid, participants,sock) {
+    return await sock.groupParticipantsUpdate(jid, [participants], 'promote')
+}
+async function demote(jid, participants,sock) {
+    return await sock.groupParticipantsUpdate(jid, [participants], 'demote')
+}
+
+export const grupAction = {
+    promote, demote
+}
+
+

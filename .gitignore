@@ -7,3 +7,4 @@ multifile.js
 *.mp4
 *.png
 *.jpeg
+db.*

@@ -21,6 +21,8 @@ Here My Command List
 > igv - Instagram Video Downloader by Url
 > igp - Instagram Picture Downloader by Url
 > yd - Download Youtube video by url
+> yp - Play Youtube audio by query
+> yv - Play Youtube video by query
 > ymd - Download Youtube music by url\n
 
 ❏┄┅━┅┄〈 〘 General 〙
