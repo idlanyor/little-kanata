@@ -70,7 +70,7 @@ bot.start().then((sock) => {
                     case 'help':
                     case 'menu':
                         await sock.sendMessage(id, {
-                            text: await helpMessage(sender),
+                            text: await helpMessage(sender, noTel),
                             footer: 'Lorem Ipsum',
                             contextInfo: {
                                 forwardingScore: 100,

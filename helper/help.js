@@ -1,12 +1,32 @@
 import { quotes } from "../features/random.js";
-export async function helpMessage(sender) {
+import { getUser } from "./database.js";
 
-    let caption = `
-*Kanata Bot*
-_by Idlanyor_\n\n
+export async function helpMessage(sender, id) {
+    try {
+        let user = await getUser(id);
 
-Hai *${sender}*
-Here My Command List
+        // Periksa apakah user ada atau tidak
+        if (!user) {
+            user = {
+                id: id,
+                userName: sender,
+                isPrem: false,
+                points: 0,
+                credit: 0
+            };
+        }
+
+        function cek() {
+            return `❏┄┅━┅┄〈 〘 Ingfo Member 〙
+🗝 ID: ${user.id || id}
+📝 NAMA: ${user.userName || sender}
+✨ STATUS: ${user.isPrem ? 'Premium' : 'Not Premium'}
+💯 POIN: ${user.points || 0}
+💸 CREDIT: ${user.credit || 0}`;
+        }
+
+        let caption = `
+${cek()}
 
 ❏┄┅━┅┄〈 〘 Artificial Intelligence 〙
 > gm - Chat With Gemini AI
@@ -42,11 +62,14 @@ Here My Command List
 ❏┄┅━┅┄〈 〘 Misc. 〙
 > owner - nampilin nomor owner bot
 > ping - buat ngecek kecepatan respons bot
-> jenaka - tebak kata jenaka
-> lontong - teka teki sulit
 
+${await quotes()}`;
 
-${await quotes()}`
+        console.log(caption);
+        return caption;
 
-    return caption
+    } catch (error) {
+        console.log(error);
+        return "Terjadi kesalahan saat mengambil data pengguna.";
+    }
 }
