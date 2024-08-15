@@ -6,6 +6,13 @@ export async function helpMessage(sender) {
 _by Idlanyor_\n\n
 
 Hai *${sender}*
+
+🗝 ID: 6285328913428
+📝 NAMA : ROYNALDI
+✨ STATUS : Not Premium
+💯 POIN : 0
+💸 CREDIT : 10
+
 Here My Command List
 
 ❏┄┅━┅┄〈 〘 Artificial Intelligence 〙
