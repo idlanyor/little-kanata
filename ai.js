@@ -2,13 +2,19 @@ import MistralClient from "@mistralai/mistralai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Groq from "groq-sdk";
 import config from "./config.js";
+import { skizo } from "./helper/skizo.js";
 
-class GroqAi{
-    constructor(apiKey) {
-        this.apiKey = apiKey;
+
+// skizo
+export async function dalle3(prompt) {
+    try {
+        return (await skizo('dalle3', { params: { prompt: encodeURIComponent(prompt) } })).data.url
+    } catch (error) {
+        console.error('Terjadi Kesalahan', error)
     }
-
 }
+// console.log(await dalle3('anime loli kawaii'));
+
 
 // text generation
 // gemini
@@ -26,7 +32,7 @@ export async function mistral(content) {
         messages: [
             {
                 role: 'assistant',
-                content: 'kamu pandai berbahasa indonesia'
+                content: 'Hai,selamat datang,namaku adalah Kanata,senang bertemu denganmu,apakah ada yang bisa aku bantu?'
             },
             {
                 role: 'user',

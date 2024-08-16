@@ -1,4 +1,3 @@
-import { quotes } from "../features/random.js";
 import { getUser } from "./database.js";
 
 export async function helpMessage(sender, id) {
@@ -62,8 +61,7 @@ ${cek()}
 ❏┄┅━┅┄〈 〘 Misc. 〙
 > owner - nampilin nomor owner bot
 > ping - buat ngecek kecepatan respons bot
-
-${await quotes()}`;
+`;
 
         console.log(caption);
         return caption;
