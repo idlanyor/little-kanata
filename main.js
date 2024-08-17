@@ -10,12 +10,14 @@ import { cerpen } from './features/random.js';
 import { ytPlay, ytSearchResult } from './features/youtube.js';
 import { removebg } from './features/image.js';
 import { gemini, gemmaGroq, llamaGroq, mistral, mixtralGroq } from './ai.js';
-import { helpMessage } from './helper/help.js';
+import { helpMessage, memberIngfo } from './helper/help.js';
 import { gambarPdf } from './features/pdf.js';
 import { tomp3 } from './features/converter.js';
 import { calculatePing, systemSpec } from './features/owner/server.js';
 import { chatgpt4 } from './features/rapidai.js';
 import { vcard } from './features/owner/ownerContact.js';
+import { addPrem, updateUser } from './helper/database.js';
+// import { getLinkPreview } from 'link-preview-js';
 import { registerUser } from './helper/database.js';
 import { mediaMsg } from './plugins/media-message/index.js';
 import chalk from 'chalk';
@@ -32,6 +34,12 @@ bot.start().then((sock) => {
     sock.ev.on('messages.upsert', async chatUpdate => {
         try {
             let m = chatUpdate.messages[0];
+            // make sticker
+            await sticker(sock, m, chatUpdate);
+            await removebg(sock, m, chatUpdate)
+            await gambarPdf(sock, m, chatUpdate)
+            await tomp3(sock, m, chatUpdate)
+            console.log(m.message)
             await mediaMsg(sock, m, chatUpdate);
 
             if (!m.message) return;
@@ -56,16 +64,19 @@ bot.start().then((sock) => {
             const cmd = pesan[0].toLowerCase();
             const psn = pesan.slice(1).join(' ');
             noTel = '@' + noTel.replace('@s.whatsapp.net', '');
+            let isOwner = noTel.replace('@', '') !== config.ownerNumber
             let caption = "";
             if (tebakSession.has(id)) {
                 if (m.key.fromMe) return
-                await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId);
+                await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId, noTel);
             } else {
                 switch (cmd) {
                     case 'h':
                     case 'help':
                     case 'menu':
                         await sock.sendMessage(id, {
+                            text: await helpMessage(sender, noTel),
+                            footer: 'Ini adalah Footer KAnata',
                             text: await helpMessage(sender),
                             footer: 'Lorem Ipsum',
                             contextInfo: {
@@ -97,11 +108,12 @@ bot.start().then((sock) => {
                             sock.sendMessage(id, { text: "ketik *reg<spasi>namaKamu*,contoh `reg Roynaldi`" })
                             return
                         }
-                        // let idUser = id
-                        await registerUser({ id: noTel, userName: psn, isPrem: false, points: 0, credit: 10 })
+                        await updateUser({ id: noTel, userName: psn, isPrem: false, points: 0, credit: 10 })
                         await sock.sendMessage(id, { text: `「 *REGISTRASI BERHASIL* 」\n🗝️ID: ${noTel.replace('@', '')}\n📝 NAMA: ${psn.toUpperCase()}\n✨ STATUS:Not Premium\n💯 POIN:0\n💸 CREDIT:10` })
                         break
-                    // Game
+                    case 'me':
+                        sock.sendMessage(id, { text: memberIngfo(noTel) })
+                        break
                     case 'owner':
                         await sock.sendMessage(
                             id,
@@ -113,15 +125,24 @@ bot.start().then((sock) => {
                             }
                         )
                         break;
-                    case 'susun':
-                        await susun(id, sock);
-                        break;
+                    // Game
                     case 'switch':
-                        if (noTel.replace('@', '') !== config.ownerNumber) {
+                        if (isOwner) {
                             await sock.sendMessage(id, { text: 'Kamu bukan owner bot' })
                             return
                         }
                         await sock.sendMessage(id, { text: 'Bot berhasil ditukar' })
+                        break;
+                    case 'addprem':
+                        if (isOwner) {
+                            await sock.sendMessage(id, { text: 'Kamu bukan owner bot' })
+                            return
+                        }
+                        result = addPrem(noTel)
+                        await sock.sendMessage(id, { text: `berhasil menambahkan premium untuk ${noTel}` })
+                        break;
+                    case 'susun':
+                        await susun(id, sock);
                         break;
                     case 'jenaka':
                         await jenaka(id, sock);
@@ -154,14 +175,14 @@ bot.start().then((sock) => {
                             await sock.sendMessage(id, { text: 'Processing, please wait...' });
                             let result = await ytPlay(psn)
                             caption = '*Youtube Play Result*'
-                            // caption += '_Preview gambarnya ga ada,xD_\n'
+                            caption += '_Preview gambarnya ga ada,xD_\n'
                             caption += '\nTitle :' + `*${result.title}*`
                             caption += '\nChannel :' + `*${result.channel}*`
                             caption += '\n _⏳Bentar yaa, audio lagi dikirim⏳_'
 
-                            await sock.sendMessage(id, { image: result.thumbnail })
+                            // await sock.sendMessage(id, { image: result.thumbnail })
                             // await sock.sendMessage(id, { text: result.audio })
-                            await sock.sendMessage(id, { audio: { url: result.audio }, ptt: true });
+                            await sock.sendMessage(id, { audio: { url: result.video },mimetype: 'audio/mp4' });
                         } catch (error) {
                             await sock.sendMessage(id, { text: 'ups,' + error.message });
                         }

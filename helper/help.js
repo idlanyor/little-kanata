@@ -1,3 +1,4 @@
+// import { quotes } from "../features/random.js";
 import { getUser } from "./database.js";
 
 export async function helpMessage(sender, id) {
@@ -65,6 +66,7 @@ Here My Command List
 ❏┄┅━┅┄〈 〘 Misc. 〙
 > owner - nampilin nomor owner bot
 > ping - buat ngecek kecepatan respons bot
+
 `;
 
         console.log(caption);
@@ -72,6 +74,28 @@ Here My Command List
 
     } catch (error) {
         console.log(error);
+        return "Terjadi kesalahan saat mengambil data pengguna.";
+    }
+}
+
+export const memberIngfo = (id) => {
+    try {
+        let user = getUser(id);
+
+        if (!user) {
+            return 'Anda belum terdaftar'
+        }
+
+        function cek() {
+            return `❏┄┅━┅┄〈 〘 Ingfo Member 〙
+🗝 ID: ${user.id || id}
+📝 NAMA: ${user.userName || sender}
+✨ STATUS: ${user.isPrem ? 'Premium' : 'Not Premium'}
+💯 POIN: ${user.points || 0}
+💸 CREDIT: ${user.credit || 0}`;
+        }
+        return cek()
+    } catch (e) {
         return "Terjadi kesalahan saat mengambil data pengguna.";
     }
 }

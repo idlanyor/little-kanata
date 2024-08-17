@@ -1,14 +1,13 @@
 import { yutub } from "../downloader.js";
 import { lol } from "../helper/lolhuman.js";
+import yts from "yt-search";
 
 export const ytsearch = async (query) => {
-    const response = (await lol('ytsearch', { params: { query } })).data.result
-        .map(({ videoId, thumbnail, title }) => ({
-            url: "https://www.youtube.com/watch?v=" + videoId,
-            thumbnail,
-            title
-        }));
-    return response;
+    const res = await yts(query);
+    return res.videos.map((video, index) => ({
+        title: video.title,
+        url: video.url
+    }));
 }
 export const ytSearchResult = async (query) => {
     const hasilPencarian = await ytsearch(query);
@@ -20,7 +19,7 @@ export const ytSearchResult = async (query) => {
     });
     return text;
 }
-// console.log(await ytSearchResult('jejak awan pesawat'))
+console.log(await ytSearchResult('jejak awan pesawat'))
 
 
 export const ytvid = async (url) => {
@@ -34,7 +33,7 @@ export const ytaud = async (url) => {
 
 export const ytPlay = async (query) => {
     try {
-        const { url } = (await ytsearch(query))[0];
+        const { url, title, } = (await ytsearch(query))[0];
         return yutub(url);
     } catch (error) {
         console.error('Error in ytPlay2:', error);
