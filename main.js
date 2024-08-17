@@ -1,24 +1,8 @@
 import { clearMessages } from '@umamdev/wabe'
 import { wabe } from './helper/bot.js';
-import { meta, tiktok, yutub } from './downloader.js';
 import config from "./config.js";
 import { groupParticipants, groupUpdate, grupAction } from './group.js';
 import { call } from './call.js';
-import { bendera, caklontong, checkAnswer, gambar, jenaka, susun, tebakSession } from './tebak/index.js';
-import sticker from './features/sticker.js';
-import { cerpen } from './features/random.js';
-import { ytPlay, ytSearchResult } from './features/youtube.js';
-import { removebg } from './features/image.js';
-import { gemini, gemmaGroq, llamaGroq, mistral, mixtralGroq } from './ai.js';
-import { helpMessage, memberIngfo } from './helper/help.js';
-import { gambarPdf } from './features/pdf.js';
-import { tomp3 } from './features/converter.js';
-import { calculatePing, systemSpec } from './features/owner/server.js';
-import { chatgpt4 } from './features/rapidai.js';
-import { vcard } from './features/owner/ownerContact.js';
-import { addPrem, updateUser } from './helper/database.js';
-// import { getLinkPreview } from 'link-preview-js';
-import { registerUser } from './helper/database.js';
 import { mediaMsg } from './plugins/media-message/index.js';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -325,6 +309,14 @@ bot.start().then((sock) => {
                 }
             }
 
+            // Menampilkan log informatif ketika ada pesan masuk
+            console.log(chalk.green(`┌────────────────────────────────────────────────────┐`));
+            console.log(chalk.green(`│`) + chalk.cyan(` Pesan Masuk `) + chalk.green(`│`));
+            console.log(chalk.green(`├────────────────────────────────────────────────────┤`));
+            console.log(chalk.green(`│`) + chalk.yellow(` Dari: `) + chalk.white(sender) + chalk.green(`│`));
+            console.log(chalk.green(`│`) + chalk.yellow(` Nomor: `) + chalk.white(noTel) + chalk.green(`│`));
+            console.log(chalk.green(`│`) + chalk.yellow(` Pesan: `) + chalk.white(parsedMsg) + chalk.green(`│`));
+            console.log(chalk.green(`└────────────────────────────────────────────────────┘`));
         } catch (error) {
             console.log('_Ups, ada yang salah, silahkan coba beberapa saat lagi_', error)
             // sock.sendMessage()
@@ -341,10 +333,4 @@ bot.start().then((sock) => {
     sock.ev.on('groups.update', async (ev) => {
         groupUpdate(ev, sock);
     });
-    // sock.ev.on('presence.update', (presence) => {
-    //     console.log('Presence update event:', presence);
-    //     // You can handle presence updates here, for example, logging user status changes
-    //     console.log(`User: ${presence.id}, Status: ${presence.presences}`);
-
-    // });
 }).catch(error => console.log("Error starting Bot :", error))
