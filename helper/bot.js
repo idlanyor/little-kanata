@@ -42,9 +42,10 @@ class wabe {
                 keys: makeCacheableSignalKeyStore(state.keys, P),
             },
             msgRetryCounterCache,
-            // Tambahkan opsi untuk meningkatkan stabilitas koneksi
+            // Tambahkan opsi untuk meningkatkan stabilitas koneksi dan mencegah idle
             connectOptions: {
                 maxRetries: 5, // Meningkatkan jumlah percobaan koneksi ulang
+                keepAlive: true, // Aktifkan keep alive untuk mencegah koneksi idle
             },
         });
 
@@ -53,22 +54,26 @@ class wabe {
         sock.ev.on("creds.update", saveCreds);
 
         if (!sock.authState.creds.registered) {
-            console.log(chalk.red("Request pairing code"));
+            console.log(chalk.red("Mohon masukkan kode pairing"));
             const number = this.phoneNumber;
             const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
             await delay(6000);
             const code = await sock.requestPairingCode(number);
-            console.log(chalk.green("Pairing Code: "), code);
+            console.log(chalk.green("Kode Pairing: "), chalk.bold(code));
         }
 
         sock.ev.on("connection.update", async update => {
             const { connection, lastDisconnect } = update;
             if (connection === "connecting") {
-                console.log(chalk.blue("starting sockets connections"));
+                console.log(chalk.blue("Memulai koneksi soket"));
             } else if (connection === "open") {
-                console.log(chalk.green("sockets connected"));
+                console.log(chalk.green("Soket terhubung"));
                 // Melakukan ping periodik untuk memastikan koneksi tetap hidup
-
+                // Tambahkan logika untuk merestart koneksi setelah terkoneksi untuk pertama kali
+                if (lastDisconnect && lastDisconnect.error.output.statusCode === DisconnectReason.loggedOut) {
+                    console.log(chalk.red("Koneksi terputus karena logout, mencoba kembali..."));
+                    this.start().catch(() => this.start());
+                }
             } else if (connection === "close") {
                 if (lastDisconnect.error.output.statusCode == DisconnectReason.loggedOut) {
                     process.exit(0);
