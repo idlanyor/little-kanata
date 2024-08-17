@@ -24,8 +24,12 @@ export async function helpMessage(sender, id) {
 💸 CREDIT: ${user.credit || 0}`;
         }
 
-        let caption = `
-${cek()}
+    let caption = `
+*Kanata Bot*
+_by Idlanyor_\n\n
+
+Hai *${sender}*
+Here My Command List
 
 ❏┄┅━┅┄〈 〘 Artificial Intelligence 〙
 > gm - Chat With Gemini AI

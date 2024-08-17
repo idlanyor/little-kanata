@@ -3,7 +3,7 @@ import { JSONFilePreset } from 'lowdb/node';
 const defaultData = {
     users: []
 }
-const db = await JSONFilePreset('dbs.json', defaultData)
+const db = await JSONFilePreset('db.json', defaultData)
 
 export const registerUser = async ({ id, userName, isPrem, points, credit }) => {
     const user = { id, userName, isPrem, points, credit };
@@ -19,9 +19,5 @@ export const registerUser = async ({ id, userName, isPrem, points, credit }) => 
         }
     });
     return db.write()
-}
-export const getUser = async (id) => {
-    const user = await db.data.users.find(u => u.id === id);
-    return user
 }
 
