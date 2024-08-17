@@ -61,6 +61,7 @@ bot.start().then((sock) => {
                     }
                 });
 
+
                 if (plugins[cmd]) {
                     await plugins[cmd]({ sock, m, id, psn, sender, noTel, caption });
                 }
