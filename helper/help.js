@@ -1,3 +1,4 @@
+// import { quotes } from "../features/random.js";
 import { getUser } from "./database.js";
 
 export async function helpMessage(sender, id) {
@@ -24,8 +25,12 @@ export async function helpMessage(sender, id) {
 💸 CREDIT: ${user.credit || 0}`;
         }
 
-        let caption = `
-${cek()}
+    let caption = `
+*Kanata Bot*
+_by Idlanyor_\n\n
+
+Hai *${sender}*
+Here My Command List
 
 ❏┄┅━┅┄〈 〘 Artificial Intelligence 〙
 > gm - Chat With Gemini AI
@@ -61,6 +66,7 @@ ${cek()}
 ❏┄┅━┅┄〈 〘 Misc. 〙
 > owner - nampilin nomor owner bot
 > ping - buat ngecek kecepatan respons bot
+
 `;
 
         console.log(caption);
@@ -68,6 +74,28 @@ ${cek()}
 
     } catch (error) {
         console.log(error);
+        return "Terjadi kesalahan saat mengambil data pengguna.";
+    }
+}
+
+export const memberIngfo = (id) => {
+    try {
+        let user = getUser(id);
+
+        if (!user) {
+            return 'Anda belum terdaftar'
+        }
+
+        function cek() {
+            return `❏┄┅━┅┄〈 〘 Ingfo Member 〙
+🗝 ID: ${user.id || id}
+📝 NAMA: ${user.userName || sender}
+✨ STATUS: ${user.isPrem ? 'Premium' : 'Not Premium'}
+💯 POIN: ${user.points || 0}
+💸 CREDIT: ${user.credit || 0}`;
+        }
+        return cek()
+    } catch (e) {
         return "Terjadi kesalahan saat mengambil data pengguna.";
     }
 }
