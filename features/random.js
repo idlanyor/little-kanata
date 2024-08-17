@@ -27,11 +27,11 @@ ${cerpen}
     }
 
 }
-export async function quotes() {
-    let response = await lol('random/quotes')
-    let { by, quote } = response.data.result
-    return ` *${quote}* - _${by}_`
+// export async function quotes() {
+//     let response = await lol('random/quotes')
+//     let { by, quote } = response.data.result
+//     return ` *${quote}* - _${by}_`
 
-}
+// }
 
 // console.log(await quotes())

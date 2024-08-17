@@ -3,7 +3,6 @@ import { wabe } from './helper/bot.js';
 import config from "./config.js";
 import { groupParticipants, groupUpdate, grupAction } from './group.js';
 import { call } from './call.js';
-import { checkAnswer, tebakSession } from './tebak/index.js';
 import { mediaMsg } from './plugins/media-message/index.js';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -19,6 +18,12 @@ bot.start().then((sock) => {
     sock.ev.on('messages.upsert', async chatUpdate => {
         try {
             let m = chatUpdate.messages[0];
+            // make sticker
+            await sticker(sock, m, chatUpdate);
+            await removebg(sock, m, chatUpdate)
+            await gambarPdf(sock, m, chatUpdate)
+            await tomp3(sock, m, chatUpdate)
+            console.log(m.message)
             await mediaMsg(sock, m, chatUpdate);
 
             if (!m.message) return;
@@ -43,10 +48,11 @@ bot.start().then((sock) => {
             const cmd = pesan[0].toLowerCase();
             const psn = pesan.slice(1).join(' ');
             noTel = '@' + noTel.replace('@s.whatsapp.net', '');
+            let isOwner = noTel.replace('@', '') !== config.ownerNumber
             let caption = "";
             if (tebakSession.has(id)) {
                 if (m.key.fromMe) return
-                await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId);
+                await checkAnswer(id, parsedMsg.toLowerCase(), sock, quotedMessageId, noTel);
             } else {
                 // Membaca semua file dalam folder plugins
                 const pluginsDir = path.join(__dirname, 'plugins');
